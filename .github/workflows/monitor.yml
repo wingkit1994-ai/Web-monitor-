@@ -1,1 +1,33 @@
+name: Website Monitor
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # every 5 minutes
+  workflow_dispatch:
 
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check site
+        env:
+          URL: "https://www.travisscott.com"  # replace with your site
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          python3 - <<'PY'
+          import os, requests
+          URL = os.environ['URL']
+          try:
+              r = requests.get(URL, timeout=10)
+              if r.status_code != 200:
+                  msg = f"ALERT: {URL} returned {r.status_code}"
+              else:
+                  msg = None
+          except Exception as e:
+              msg = f"ALERT: Exception checking {URL}: {e}"
+          if msg and os.environ.get('SLACK_WEBHOOK'):
+              requests.post(os.environ['SLACK_WEBHOOK'], json={"text": msg})
+          if msg:
+              print(msg)
+          else:
+              print("OK")
+          PY
