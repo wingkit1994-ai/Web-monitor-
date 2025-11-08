@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Check site
         env:
-          URL: "https://www.travisscott.com"  # replace with your site
+          URL: "https://shop.travisscott.com"  # replace with your site
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         run: |
           python3 - <<'PY'
